@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   app:
@@ -32,6 +32,7 @@ services:
       - app
 
   db:
+    platform: linux/x86_64
     image: mysql:5.7
     container_name: laravel_db
     restart: unless-stopped
