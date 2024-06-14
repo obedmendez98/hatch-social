@@ -1,0 +1,30 @@
+name: Deploy to DigitalOcean Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to DigitalOcean Container Registry
+        run: |
+          echo "${{ secrets.DOCKER_CREDENTIALS }}" | docker login registry.digitalocean.com -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build . -t registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+          docker push registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+
+      - name: Deploy to DigitalOcean Droplet (if needed)
+        run: |
+          # Aquí puedes añadir comandos para desplegar la imagen en un Droplet si es necesario
+          # Por ejemplo:
+          # ssh user@droplet_ip "docker pull registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8} && docker-compose up -d"
+        if: false   #Descomenta esta línea y ajusta según tus necesidades
+
