@@ -23,19 +23,9 @@ jobs:
           docker build . -t registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
           docker push registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: Deploy to DigitalOcean Droplet
-        env:
-          DOCKER_IMAGE: registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          HOST_PROD: ${{ secrets.HOST_PROD }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD_PROD: ${{ secrets.PASSWORD_PROD }}
+      - name: Deploy to DigitalOcean Droplet (if needed)
         run: |
-          sshpass -p ${{ secrets.PASSWORD_PROD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST_PROD }} << 'EOF'
-            docker pull $DOCKER_IMAGE
-            docker stop my-laravel-app || true
-            docker rm my-laravel-app || true
-            docker run -d --name my-laravel-app -p 80:80 $DOCKER_IMAGE
-          EOF
+          # Aquí puedes añadir comandos para desplegar la imagen en un Droplet si es necesario
+          # Por ejemplo:
+          # ssh user@droplet_ip "docker pull registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8} && docker-compose up -d"
+        if: false   #Descomenta esta línea y ajusta según tus necesidades
