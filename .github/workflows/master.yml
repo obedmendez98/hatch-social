@@ -20,22 +20,25 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build . -t registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          docker push registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+          IMAGE_NAME=registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+          docker build . -t $IMAGE_NAME
+          docker push $IMAGE_NAME
+        env:
+          IMAGE_NAME: registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
       - name: Deploy to DigitalOcean Droplet
         env:
-          DOCKER_IMAGE: registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          HOST_PROD: ${{ secrets.HOST_PROD }}
+          HOST: ${{ secrets.HOST_PROD }}
           USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD_PROD: ${{ secrets.PASSWORD_PROD }}
+          PASSWORD: ${{ secrets.PASSWORD_PROD }}
+          IMAGE_NAME: registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
         run: |
-          sshpass -p ${{ secrets.PASSWORD_PROD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST_PROD }} << 'EOF'
-            docker pull $DOCKER_IMAGE
+          sshpass -p "${PASSWORD}" ssh -o StrictHostKeyChecking=no ${USERNAME}@${HOST} << EOF
+            docker pull ${IMAGE_NAME}
             docker stop laravel_app || true
             docker rm laravel_app || true
-            docker run -d --name laravel_app -p 80:80 $DOCKER_IMAGE
-          EOF
+            docker run -d --name laravel_app -p 80:80 ${IMAGE_NAME}
+            EOF
