@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to DigitalOcean
 
 on:
   push:
@@ -6,25 +6,32 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Login to DigitalOcean Container Registry
-        run: |
-          echo "${{ secrets.DOCKER_CREDENTIALS }}" | docker login registry.digitalocean.com -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
       - name: Build and push Docker image
         run: |
-          docker build . -t registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          docker push registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+          docker buildx build --platform linux/amd64,linux/arm64 -t registry.digitalocean.com/hatchcontainer/app:${{ github.sha }} .
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.digitalocean.com -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push registry.digitalocean.com/hatchcontainer/app:${{ github.sha }}
 
-      - name: Deploy to DigitalOcean Droplet (if needed)
-        run: |
-          # Aquí puedes añadir comandos para desplegar la imagen en un Droplet si es necesario
-          # Por ejemplo:
-          # ssh user@droplet_ip "docker pull registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8} && docker-compose up -d"
-        if: false   #Descomenta esta línea y ajusta según tus necesidades
+      - name: Deploy to Droplet
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME}}
+          password: ${{ secrets.PASSWORD_PROD }}
+          port: ${{ secrets.DROPLET_PORT }}
+          script: |
+            docker pull registry.digitalocean.com/hatchcontainer/app:${{ github.sha }}
+            docker stop hatchcontainer || true
+            docker rm hatchcontainer || true
+            docker run -d --name hatchcontainer -p 80:80 registry.digitalocean.com/hatchcontainer/app:${{ github.sha }}
 
