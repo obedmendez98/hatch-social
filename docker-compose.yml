@@ -12,10 +12,11 @@ services:
     volumes:
       - .:/var/www
       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      - DB_CONNECTION=mysql
+      - DATABASE_URL=mysql://doadmin:password@db-hatchsocial-do-user-16715462-0.c.db.ondigitalocean.com:25060/hatch_staging?sslmode=REQUIRED
     networks:
       - laravel
-    depends_on:
-      - db
 
   webserver:
     image: nginx:alpine
@@ -30,21 +31,6 @@ services:
       - laravel
     depends_on:
       - app
-
-  db:
-    platform: linux/x86_64
-    image: mysql:5.7
-    container_name: laravel_db
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: doadmin
-      MYSQL_PASSWORD: AVNS_N0k2uU9af8NwPJyNhSa
-    volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - laravel
 
 networks:
   laravel:
