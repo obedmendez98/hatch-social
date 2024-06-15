@@ -39,8 +39,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel_user
-      MYSQL_PASSWORD: laravel_password
+      MYSQL_USER: doadmin
+      MYSQL_PASSWORD: AVNS_N0k2uU9af8NwPJyNhSa
     volumes:
       - dbdata:/var/lib/mysql
     networks:
