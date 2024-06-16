@@ -5,12 +5,6 @@ on:
     branches:
       - master
 
-env:
-  IMAGE_NAME: registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-  HOST_PROD: ${{ secrets.HOST_PROD }}
-  USERNAME: ${{ secrets.USERNAME }}
-  PASSWORD_PROD: ${{ secrets.PASSWORD_PROD }}
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -26,17 +20,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build . -t registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          docker push registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
+          docker build . -t registry.digitalocean.com/hatchcontainer/app:hatch-social
+          docker push registry.digitalocean.com/hatchcontainer/app:hatch-social
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: Deploy to DigitalOcean Droplet
+      - name: Deploy to DigitalOcean Droplet (if needed)
         run: |
-          sshpass -p "${PASSWORD_PROD}" ssh -o StrictHostKeyChecking=no ${USERNAME}@${HOST_PROD} << EOF
-            docker pull registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-            docker stop laravel_app || true
-            docker rm laravel_app || true
-            docker run -d --name laravel_app -p 80:80 registry.digitalocean.com/hatchcontainer/app:${GITHUB_SHA::8}
-          EOF
+          # Aquí puedes añadir comandos para desplegar la imagen en un Droplet si es necesario
+          # Por ejemplo:
+          # ssh user@droplet_ip "docker pull registry.digitalocean.com/hatchcontainer/app:hatch-social && docker-compose up -d"
+        if: false   #Descomenta esta línea y ajusta según tus necesidades
+
