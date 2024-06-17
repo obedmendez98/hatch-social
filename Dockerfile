@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo_mysql zip
+    && docker-php-ext-install pdo_mysql zip bcmath exif
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
