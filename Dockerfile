@@ -1,4 +1,4 @@
-# Usar una imagen base de PHP con FPM y Nginx
+# Usar una imagen base de PHP con FPM
 FROM php:8.1-fpm
 
 # Instalar extensiones necesarias de PHP y otras dependencias
@@ -20,16 +20,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar los archivos del proyecto
+# Copiar los archivos del proyecto, excepto los que están en .dockerignore
 COPY . .
-
-# Instalar las dependencias del proyecto
-# Agregar comandos de depuración
-RUN composer install --no-dev --optimize-autoloader || { cat /var/www/html/vendor/composer/install_log.txt; exit 1; }
 
 # Establecer permisos correctos para Laravel
 RUN chown -R www-data:www-data storage \
     && chown -R www-data:www-data bootstrap/cache
+
+# Verificar si Composer está instalado correctamente
+RUN composer --version
+
+# Instalar las dependencias del proyecto
+RUN composer install --no-dev --optimize-autoloader
 
 # Exponer el puerto 9000 para PHP-FPM
 EXPOSE 9000
