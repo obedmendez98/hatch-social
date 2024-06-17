@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: registry.digitalocean.com/hatchcontainer/app:hatch-social
     container_name: laravel_app
     restart: unless-stopped
     tty: true
