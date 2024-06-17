@@ -1,40 +1,35 @@
-version: '3'
+version: '3.7'
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: laravel_app
+    image: registry.digitalocean.com/hatchcontainer/app:hatch-social
     container_name: laravel_app
     restart: unless-stopped
-    working_dir: /var/www
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
     volumes:
       - .:/var/www
-      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
-    environment:
-      - DB_CONNECTION=mysql
-      - DATABASE_URL=mysql://doadmin:password@db-hatchsocial-do-user-16715462-0.c.db.ondigitalocean.com:25060/hatch_staging?sslmode=REQUIRED
     networks:
-      - laravel
+      - app-network
 
   webserver:
     image: nginx:alpine
     container_name: laravel_webserver
     restart: unless-stopped
+    tty: true
     ports:
-      - "8000:80"
+      - "80:80"
     volumes:
       - .:/var/www
       - ./nginx/conf.d:/etc/nginx/conf.d
     networks:
-      - laravel
-    depends_on:
-      - app
+      - app-network
 
 networks:
-  laravel:
+  app-network:
     driver: bridge
-
-volumes:
-  dbdata:
