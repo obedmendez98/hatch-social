@@ -1,48 +1,27 @@
-# Use the official PHP image.
-# https://hub.docker.com/_/php
-FROM php:8.2-fpm
+# Usar una imagen base de PHP con FPM
+FROM php:8.1-fpm
 
-# Instalar dependencias
-RUN apt-get update \
-    && apt-get install -y \
-        libzip-dev \
-        zip \
-        unzip \
-        git \
-        curl \
-        libpng-dev \
-        libjpeg-dev \
-        libfreetype6-dev \
-        libonig-dev \
-        libxml2-dev \
-        libpq-dev \
-        libmagickwand-dev --no-install-recommends \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mbstring exif pcntl bcmath opcache
+# Instalar extensiones necesarias de PHP
+RUN docker-php-ext-install pdo pdo_mysql
 
-# Limpiar cache de apt
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establecer directorio de trabajo
-WORKDIR /var/www
+# Configurar el directorio de trabajo
+WORKDIR /var/www/html
 
-# Copiar composer.lock y composer.json
-COPY composer.lock composer.json /var/www/
+# Copiar los archivos del proyecto
+COPY . .
 
-# Instalar composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instalar las dependencias del proyecto
+RUN composer install
 
-# Instalar dependencias de PHP
-RUN composer install --no-scripts --no-autoloader
+# Establecer permisos correctos para Laravel
+RUN chown -R www-data:www-data storage
+RUN chown -R www-data:www-data bootstrap/cache
 
-# Copiar código de la aplicación
-COPY . /var/www
-
-# Cargar dependencias de PHP
-RUN composer dump-autoload
-
-# Exponer puerto 9000 y arrancar PHP-FPM
+# Exponer el puerto 9000 para PHP-FPM
 EXPOSE 9000
+
+# Comando para iniciar PHP-FPM
 CMD ["php-fpm"]
