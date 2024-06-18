@@ -45,38 +45,44 @@ jobs:
       - name: Copy Docker Compose file to Droplet
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DROPLET_IP }}
-          username: root
-          password: ${{ secrets.DROPLET_PASSWORD }}
-          source: docker-compose.yml
-          target: /hatch-social/docker-compose.yml
-          debug: true
-  
+            host: ${{ secrets.DROPLET_IP }}
+            username: root
+            password: ${{ secrets.DROPLET_PASSWORD }}
+            source: docker-compose.yml
+            target: /hatch-social/
+            debug: true
+    
       - name: Copy second file to Droplet
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.DROPLET_IP }}
-          username: root
-          password: ${{ secrets.DROPLET_PASSWORD }}
-          source: default.conf
-          target: /hatch-social/default.conf
-          debug: true
-
-      - name: SSH into Droplet, stop and remove containers, images, and prepare directory
+            host: ${{ secrets.DROPLET_IP }}
+            username: root
+            password: ${{ secrets.DROPLET_PASSWORD }}
+            source: default.conf
+            target: /hatch-social/
+            debug: true
+    
+      - name: SSH into Droplet and manage Docker containers
         run: |
-          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
-
-              # Cambiar al directorio /hatch-social
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
               cd /hatch-social
-        
+    
+              # Verificar que el archivo docker-compose.yml está presente y no es un directorio
+              if [ -f docker-compose.yml ]; then
+                echo "docker-compose.yml is a file"
+              else
+                echo "docker-compose.yml is NOT a file or does not exist"
+                exit 1
+              fi
+    
               # Detener y eliminar todos los contenedores si existen
               docker-compose down || true
-        
+    
               # Eliminar todas las imágenes si existen
               docker-compose rm -f || true
-        
+    
               # Reiniciar los servicios
               docker-compose up -d
-          EOF
+            EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
