@@ -53,6 +53,11 @@ RUN php artisan key:generate --force
 # Ejecutar las migraciones de la base de datos
 RUN php artisan migrate --force
 
+# Copiar el script de entrada y darle permisos de ejecución
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Exponer el puerto 9000 y arrancar PHP-FPM
 EXPOSE 9000
-CMD ["php-fpm"]
+# Establecer el script de entrada como CMD
+ENTRYPOINT ["docker-entrypoint.sh"]
