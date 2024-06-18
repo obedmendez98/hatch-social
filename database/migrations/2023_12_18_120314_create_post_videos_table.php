@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('post_videos', function (Blueprint $table) {
-            $table->id();
-            $table->string('post_id')->nullable();
-            $table->string('name')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('post_videos')) {
+            Schema::create('post_videos', function (Blueprint $table) {
+                $table->id();
+                $table->string('post_id')->nullable();
+                $table->string('name')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

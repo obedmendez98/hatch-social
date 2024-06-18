@@ -13,21 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('profiles', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_id');
-            $table->string('name')->unique();
-            $table->string('passcode');
-            $table->text('description')->nullable();
-            $table->string('type');
-            $table->string('privacy');
-            $table->string('qa_status');
-            $table->string('photo');
-            $table->string('is_logged_in');
-            $table->text('interests')->nullable();
-            // $table->text('feeds')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('profiles')) {
+            Schema::create('profiles', function (Blueprint $table) {
+                $table->id();
+                $table->string('user_id');
+                $table->string('name')->unique();
+                $table->string('passcode');
+                $table->text('description')->nullable();
+                $table->string('type');
+                $table->string('privacy');
+                $table->string('qa_status');
+                $table->string('photo');
+                $table->string('is_logged_in');
+                $table->text('interests')->nullable();
+                // $table->text('feeds')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

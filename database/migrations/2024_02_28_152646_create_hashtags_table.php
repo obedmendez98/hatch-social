@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('hashtags', function (Blueprint $table) {
-            $table->id();
-            $table->integer('feed_id')->nullable();
-            $table->string('title')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('hashtags')) {
+            Schema::create('hashtags', function (Blueprint $table) {
+                $table->id();
+                $table->integer('feed_id')->nullable();
+                $table->string('title')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

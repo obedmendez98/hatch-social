@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('community_interests', function (Blueprint $table) {
-            $table->id();
-            $table->string('interest_id')->nullable();
-            $table->string('community_id')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('community_interests')) {
+            Schema::create('community_interests', function (Blueprint $table) {
+                $table->id();
+                $table->string('interest_id')->nullable();
+                $table->string('community_id')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

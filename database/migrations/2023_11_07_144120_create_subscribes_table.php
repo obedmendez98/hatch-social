@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subscribes', function (Blueprint $table) {
-            $table->id();
-            $table->string('profile_id');
-            $table->string('name')->nullable();
-            $table->string('photo')->nullable();
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('subscribes')) {
+            Schema::create('subscribes', function (Blueprint $table) {
+                $table->id();
+                $table->string('profile_id');
+                $table->string('name')->nullable();
+                $table->string('photo')->nullable();
+                $table->text('description')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

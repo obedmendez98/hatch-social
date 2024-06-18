@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id();
-            $table->string('community_id')->nullable();
-            $table->string('profile_id')->nullable();
-            $table->string('title')->nullable();
-            $table->text('description')->nullable();
-            $table->string('date')->nullable();
-            $table->string('time')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('events')) {
+            Schema::create('events', function (Blueprint $table) {
+                $table->id();
+                $table->string('community_id')->nullable();
+                $table->string('profile_id')->nullable();
+                $table->string('title')->nullable();
+                $table->text('description')->nullable();
+                $table->string('date')->nullable();
+                $table->string('time')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

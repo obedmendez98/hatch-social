@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('post_likes', function (Blueprint $table) {
-            $table->id();
-            $table->string('profile_id');
-            $table->string('post_id');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('post_likes')) {
+            Schema::create('post_likes', function (Blueprint $table) {
+                $table->id();
+                $table->string('profile_id');
+                $table->string('post_id');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -3,7 +3,7 @@ name: Deploy Docker
 on:
   push:
     branches:
-      - master
+      - master  # Cambia esto por el nombre de tu rama principal si es diferente
 
 jobs:
   build-and-push:
@@ -23,3 +23,55 @@ jobs:
           docker build . -t registry.digitalocean.com/containerhatch/app:hatch-social
           docker push registry.digitalocean.com/containerhatch/app:hatch-social
 
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Install Docker and Docker Compose on Droplet
+        run: |
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh root@${{ secrets.DROPLET_IP }} << EOF
+            apt-get update
+            apt-get install -y docker.io docker-compose
+          EOF
+        env:
+          DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+
+      - name: SSH into Droplet, stop and remove containers, images, and prepare directory
+        run: |
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh root@${{ secrets.DROPLET_IP }} << EOF
+            if [ -d "/hatch-social" ]; then
+              docker-compose -f /hatch-social/docker-compose.yml down
+              docker rm -f $(docker ps -aq)
+              docker rmi -f $(docker images -aq)
+            fi
+            mkdir -p /hatch-social
+          EOF
+        env:
+          DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+
+      - name: Copy Docker Compose file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: docker-compose.yml
+          target: /hatch-social/docker-compose.yml
+
+      - name: Copy second file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: default.conf
+          target: /hatch-social/default.conf
+
+      - name: SSH into Droplet and deploy with Docker Compose
+        run: |
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh root@${{ secrets.DROPLET_IP }} << EOF
+            cd /hatch-social
+            docker-compose pull
+            docker-compose up -d
+          EOF
+        env:
+          DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}

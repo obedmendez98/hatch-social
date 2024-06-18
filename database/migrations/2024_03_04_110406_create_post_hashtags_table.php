@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('post_hashtags', function (Blueprint $table) {
-            $table->id();
-            $table->integer('post_id')->nullable();
-            $table->integer('feed_id')->nullable();
-            $table->integer('comunity_id')->nullable();
-            $table->integer('hashtag_id')->nullable();
-            $table->integer('profile_id')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('post_hashtags')) {
+            Schema::create('post_hashtags', function (Blueprint $table) {
+                $table->id();
+                $table->integer('post_id')->nullable();
+                $table->integer('feed_id')->nullable();
+                $table->integer('comunity_id')->nullable();
+                $table->integer('hashtag_id')->nullable();
+                $table->integer('profile_id')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

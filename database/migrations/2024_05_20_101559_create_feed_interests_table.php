@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('feed_interests', function (Blueprint $table) {
-            $table->id();
-            $table->integer('interest_id');
-            $table->integer('feed_id');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('feed_interests')) {
+            Schema::create('feed_interests', function (Blueprint $table) {
+                $table->id();
+                $table->integer('interest_id');
+                $table->integer('feed_id');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('feeds', function (Blueprint $table) {
-            $table->id();
-            $table->string('profile_id');
-            $table->string('name')->nullable();
-            $table->string('image')->nullable();
-            $table->string('type')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('feeds')) {
+            Schema::create('feeds', function (Blueprint $table) {
+                $table->id();
+                $table->string('profile_id');
+                $table->string('name')->nullable();
+                $table->string('image')->nullable();
+                $table->string('type')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

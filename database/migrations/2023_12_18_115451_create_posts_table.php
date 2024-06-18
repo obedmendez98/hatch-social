@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('community_id')->nullable();
-            $table->string('profile_id')->nullable();
-            $table->string('caption')->nullable();
-            $table->string('hashtags')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('posts')) {
+            Schema::create('posts', function (Blueprint $table) {
+                $table->id();
+                $table->string('community_id')->nullable();
+                $table->string('profile_id')->nullable();
+                $table->string('caption')->nullable();
+                $table->string('hashtags')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

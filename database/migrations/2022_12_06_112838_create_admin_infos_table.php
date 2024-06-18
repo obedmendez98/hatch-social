@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('admin_infos', function (Blueprint $table) {
-            $table->id();            
-            $table->string('official_email')->nullable();
-            $table->string('phone')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('admin_infos')) {
+            Schema::create('admin_infos', function (Blueprint $table) {
+                $table->id();            
+                $table->string('official_email')->nullable();
+                $table->string('phone')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

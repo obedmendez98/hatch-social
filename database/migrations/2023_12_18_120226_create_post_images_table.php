@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('post_images', function (Blueprint $table) {
-            $table->id();
-            $table->string('post_id')->nullable();
-            $table->string('name')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('post_images')) {
+            Schema::create('post_images', function (Blueprint $table) {
+                $table->id();
+                $table->string('post_id')->nullable();
+                $table->string('name')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

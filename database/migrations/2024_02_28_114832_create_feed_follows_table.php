@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('feed_follows', function (Blueprint $table) {
-            $table->id();
-            $table->string('feed_id')->nullable();
-            $table->string('profile_id')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('feed_follows')) {
+            Schema::create('feed_follows', function (Blueprint $table) {
+                $table->id();
+                $table->string('feed_id')->nullable();
+                $table->string('profile_id')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

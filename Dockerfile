@@ -1,8 +1,7 @@
-# Use the official PHP image.
-# https://hub.docker.com/_/php
+# Utilizar la imagen oficial de PHP
 FROM php:8.2-fpm
 
-# Instalar dependencias
+# Instalar dependencias necesarias
 RUN apt-get update \
     && apt-get install -y \
         libzip-dev \
@@ -31,21 +30,28 @@ WORKDIR /var/www/html
 # Copiar los archivos del proyecto, excepto los que están en .dockerignore
 COPY . .
 
-# Instalar composer
+# Copiar el archivo .env.example y configurar el archivo .env
+COPY .env.example .env
+
+# Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Establecer permisos correctos para Laravel
 RUN chown -R www-data:www-data storage \
     && chown -R www-data:www-data bootstrap/cache
 
-# Verificar si Composer está instalado correctamente
-RUN composer --version
+# Generar la clave de Laravel
+RUN php artisan key:generate --force
+
 # Instalar dependencias de PHP
 RUN composer install --no-scripts --no-autoloader
 
 # Cargar dependencias de PHP
 RUN composer dump-autoload
 
-# Exponer puerto 9000 y arrancar PHP-FPM
+# Ejecutar las migraciones de la base de datos
+RUN php artisan migrate --force
+
+# Exponer el puerto 9000 y arrancar PHP-FPM
 EXPOSE 9000
 CMD ["php-fpm"]

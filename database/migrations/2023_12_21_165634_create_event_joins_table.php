@@ -13,13 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('event_joins', function (Blueprint $table) {
-            $table->id();
-            $table->string('event_id')->nullable();
-            $table->string('profile_id')->nullable();
-            // $table->string()->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('event_joins')) {
+            Schema::create('event_joins', function (Blueprint $table) {
+                $table->id();
+                $table->string('event_id')->nullable();
+                $table->string('profile_id')->nullable();
+                // $table->string()->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

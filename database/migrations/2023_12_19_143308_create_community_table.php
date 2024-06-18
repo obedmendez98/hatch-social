@@ -13,19 +13,21 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('community', function (Blueprint $table) {
-            $table->id();
-            $table->string('profile_id')->nullable();
-            $table->string('title')->nullable();
-            $table->string('approval_post')->nullable();
-            $table->string('membership_cost')->nullable();
-            $table->string('privacy')->nullable();
-            $table->string('admin_create_content')->nullable();
-            $table->string('moderator_create_content')->nullable();
-            $table->string('member_create_content')->nullable();
-            $table->string('image')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('community')) {
+            Schema::create('community', function (Blueprint $table) {
+                $table->id();
+                $table->string('profile_id')->nullable();
+                $table->string('title')->nullable();
+                $table->string('approval_post')->nullable();
+                $table->string('membership_cost')->nullable();
+                $table->string('privacy')->nullable();
+                $table->string('admin_create_content')->nullable();
+                $table->string('moderator_create_content')->nullable();
+                $table->string('member_create_content')->nullable();
+                $table->string('image')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
