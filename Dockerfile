@@ -34,7 +34,7 @@ COPY . .
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Instalar dependencias de PHP
-RUN composer install --no-scripts --no-autoloader
+RUN composer install --no-scripts --no-autoloader --prefer-dist --optimize-autoloader
 
 # Establecer permisos correctos para Laravel
 RUN chown -R www-data:www-data storage \
