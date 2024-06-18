@@ -27,24 +27,28 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar los archivos del proyecto, excepto los que están en .dockerignore
-COPY . .
+# Copiar el archivo .env.example y configurar el archivo .env
+COPY .env.example .env
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copiar los archivos del proyecto, excepto los que están en .dockerignore
+COPY . .
 
 # Instalar dependencias de PHP
 RUN composer install --no-scripts --no-autoloader --prefer-dist --optimize-autoloader
 
 # Establecer permisos correctos para Laravel
 RUN chown -R www-data:www-data storage \
-    && chown -R www-data:www-data bootstrap/cache
-
-# Generar la clave de Laravel
-RUN php artisan key:generate --force
+    && chown -R www-data:www-data bootstrap/cache \
+    && chown -R www-data:www-data vendor
 
 # Cargar dependencias de PHP
 RUN composer dump-autoload
+
+# Generar la clave de Laravel
+RUN php artisan key:generate --force
 
 # Ejecutar las migraciones de la base de datos
 RUN php artisan migrate --force
