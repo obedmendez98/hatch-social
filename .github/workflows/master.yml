@@ -34,10 +34,10 @@ jobs:
 
       - name: Install Docker and Docker Compose on Droplet
         run: |
-          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -v root@${{ secrets.DROPLET_IP }} << EOF
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
             apt-get update
             apt-get install -y docker.io docker-compose
-            EOF
+          EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
 
