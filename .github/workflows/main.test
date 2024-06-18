@@ -26,3 +26,54 @@ jobs:
 
 
 
+- name: SSH into Droplet, stop and remove containers, images, and prepare directory
+        run: |
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << EOF
+            # Crear el directorio /hatch-social si no existe
+            mkdir -p /hatch-social
+            
+            # Detener y eliminar todos los contenedores si existen
+            docker stop \$(docker ps -a -q)
+            docker rm \$(docker ps -a -q)
+            
+            # Eliminar todas las imágenes si existen
+            docker rmi -f \$(docker images -a -q)
+            EOF
+        env:
+          DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+
+      - name: Copy Docker Compose file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: docker-compose.yml
+          target: /hatch-social/docker-compose.yml
+          debug: true
+
+      - name: Copy second file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: default.conf
+          target: /hatch-social/default.conf
+          debug: true
+
+      - name: SSH into Droplet and deploy Docker Compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          script: |
+
+            cd /hatch-social
+            docker-compose up -d
+
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          debug: true
