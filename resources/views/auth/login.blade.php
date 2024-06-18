@@ -257,7 +257,7 @@
       <div class="wrapper fadeInDown">
          <div id="formContent">
             <!-- Tabs Titles -->
-            <h2 class="active"> ADMIN Sign In </h2>            <!-- Icon -->
+            <h2 class="active"> ADMIN Sign Ins </h2>            <!-- Icon -->
       
             <!-- Login Form -->
             <form method="post" action="{{route('admin_post')}}">
