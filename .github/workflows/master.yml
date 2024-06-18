@@ -43,24 +43,18 @@ jobs:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
 
       - name: Copy Docker Compose file to Droplet
-        uses: appleboy/scp-action@master
-        with:
-            host: ${{ secrets.DROPLET_IP }}
-            username: root
-            password: ${{ secrets.DROPLET_PASSWORD }}
-            source: docker-compose.yml
-            target: /hatch-social/
-            debug: true
-    
+        run: |
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp docker-compose.yml root@${{ secrets.DROPLET_IP }}:/hatch-social/docker-compose.yml
+        env:
+            DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+            DROPLET_IP: ${{ secrets.DROPLET_IP }}
+  
       - name: Copy second file to Droplet
-        uses: appleboy/scp-action@master
-        with:
-            host: ${{ secrets.DROPLET_IP }}
-            username: root
-            password: ${{ secrets.DROPLET_PASSWORD }}
-            source: default.conf
-            target: /hatch-social/
-            debug: true
+        run: |
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp default.conf root@${{ secrets.DROPLET_IP }}:/hatch-social/default.conf
+        env:
+            DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+            DROPLET_IP: ${{ secrets.DROPLET_IP }}
     
       - name: SSH into Droplet and manage Docker containers
         run: |
