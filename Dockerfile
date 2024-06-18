@@ -30,11 +30,11 @@ WORKDIR /var/www/html
 # Copiar los archivos del proyecto, excepto los que están en .dockerignore
 COPY . .
 
-# Copiar el archivo .env.example y configurar el archivo .env
-COPY .env.example .env
-
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalar dependencias de PHP
+RUN composer install --no-scripts --no-autoloader
 
 # Establecer permisos correctos para Laravel
 RUN chown -R www-data:www-data storage \
@@ -42,9 +42,6 @@ RUN chown -R www-data:www-data storage \
 
 # Generar la clave de Laravel
 RUN php artisan key:generate --force
-
-# Instalar dependencias de PHP
-RUN composer install --no-scripts --no-autoloader
 
 # Cargar dependencias de PHP
 RUN composer dump-autoload
