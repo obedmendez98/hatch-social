@@ -32,21 +32,51 @@ jobs:
       - name: Ensure known_hosts file exists
         run: touch ~/.ssh/known_hosts
 
+      - name: Install Docker and Docker Compose on Droplet
+        run: |
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
+            apt-get update
+            apt-get install -y docker.io docker-compose
+            mkdir -p /hatch-social
+          EOF
+        env:
+          DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
+
+      - name: Copy Docker Compose file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: docker-compose.yml
+          target: /hatch-social/docker-compose.yml
+          debug: true
+  
+      - name: Copy second file to Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          source: default.conf
+          target: /hatch-social/default.conf
+          debug: true
+
       - name: SSH into Droplet, stop and remove containers, images, and prepare directory
         run: |
           sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
-            # Cambiar al directorio /hatch-social
-            cd /hatch-social
-  
-            # Detener y eliminar todos los contenedores si existen
-            docker-compose down || true
-  
-            # Eliminar todas las imágenes si existen
-            docker rm -f \$(docker ps -a -q) || true
-            docker rmi -f \$(docker images -a -q) || true
-  
-            # Reiniciar los servicios
-            docker-compose up -d
+
+              # Cambiar al directorio /hatch-social
+              cd /hatch-social
+        
+              # Detener y eliminar todos los contenedores si existen
+              docker-compose down || true
+        
+              # Eliminar todas las imágenes si existen
+              docker-compose rm -f || true
+        
+              # Reiniciar los servicios
+              docker-compose up -d
           EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
