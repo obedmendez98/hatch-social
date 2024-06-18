@@ -43,14 +43,17 @@ jobs:
 
       - name: SSH into Droplet, stop and remove containers, images, and prepare directory
         run: |
-          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh root@${{ secrets.DROPLET_IP }} << EOF
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << EOF
             if [ -d "/hatch-social" ]; then
+              echo "Directorio /hatch-social encontrado. Deteniendo contenedores y limpiando Docker."
               docker-compose -f /hatch-social/docker-compose.yml down
-              docker rm -f $(docker ps -aq)
-              docker rmi -f $(docker images -aq)
+              docker rm -f \$(docker ps -aq)
+              docker rmi -f \$(docker images -aq)
+            else
+              echo "Directorio /hatch-social no encontrado. Creando directorio."
+              mkdir -p /hatch-social
             fi
-            mkdir -p /hatch-social
-          EOF
+            EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
 
