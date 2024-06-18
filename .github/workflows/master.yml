@@ -77,6 +77,12 @@ jobs:
     
               # Reiniciar los servicios
               docker-compose up -d
+    
+              # Ingresar al contenedor laravel_app y ejecutar comandos específicos
+              docker exec laravel_app cp .env.example .env
+              docker exec laravel_app composer install
+              docker exec laravel_app php artisan key:generate --force
+              docker exec laravel_app php artisan migrate --force
             EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
