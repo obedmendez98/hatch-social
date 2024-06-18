@@ -26,6 +26,9 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
 
+      - name: Ensure known_hosts file exists
+        run: touch ~/.ssh/known_hosts
+
       - name: Install Docker and Docker Compose on Droplet
         run: |
           sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -v root@${{ secrets.DROPLET_IP }} << EOF
