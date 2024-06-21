@@ -77,7 +77,7 @@ jobs:
             docker-compose rm -f || true
             
             # Reiniciar los servicios
-            docker-compose up --build -d
+            docker-compose up --build --force-recreate -d
             echo "Completed Docker operations"  
           EOF
         env:
