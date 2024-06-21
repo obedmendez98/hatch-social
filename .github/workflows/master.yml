@@ -3,7 +3,7 @@ name: Deploy Docker
 on:
   push:
     branches:
-      - master  # Cambia esto por el nombre de tu rama principal si es diferente
+      - master 
 
 jobs:
   build-and-push:
@@ -62,7 +62,7 @@ jobs:
             set -e  
             cd /hatch-social
             
-            # Verificar que el archivo docker-compose.yml está presente y no es un directorio
+            # Check that docker-compose.yml is present and is not a directory
             if [ -f docker-compose.yml ]; then
               echo "docker-compose.yml is a file"
             else
@@ -70,13 +70,13 @@ jobs:
               exit 1
             fi
             
-            # Detener y eliminar todos los contenedores si existen
+            # Stop and remove all containers if they exist
             docker-compose down -v || true
             
-            # Eliminar todas las imágenes si existen
+            # Remove all images if they exist
             docker-compose rm -f || true
             
-            # Reiniciar los servicios
+            # Restart services
             docker-compose up --build --force-recreate -d
             echo "Completed Docker operations"  
           EOF

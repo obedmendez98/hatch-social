@@ -27,6 +27,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html
 
+# Eliminar contenido existente si es necesario
+RUN rm -rf *
+
 # Copiar el archivo .env.example y configurar el archivo .env
 COPY .env.example .env
 
