@@ -58,27 +58,28 @@ jobs:
     
       - name: SSH into Droplet and manage Docker containers
         run: |
-            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -tt -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
-                  cd /hatch-social
+          sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -tt -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
+              
+              cd /hatch-social
         
-                  # Verificar que el archivo docker-compose.yml está presente y no es un directorio
-                  if [ -f docker-compose.yml ]; then
-                    echo "docker-compose.yml is a file"
-                  else
-                    echo "docker-compose.yml is NOT a file or does not exist"
-                    exit 1
-                  fi
+              # Verificar que el archivo docker-compose.yml está presente y no es un directorio
+              if [ -f docker-compose.yml ]; then
+                echo "docker-compose.yml is a file"
+              else
+                echo "docker-compose.yml is NOT a file or does not exist"
+                exit 1
+              fi
         
-                  # Detener y eliminar todos los contenedores si existen
-                  docker-compose down || true
+              # Detener y eliminar todos los contenedores si existen
+              docker-compose down || true
         
-                  # Eliminar todas las imágenes si existen
-                  docker-compose rm -f || true
+              # Eliminar todas las imágenes si existen
+              docker-compose rm -f || true
         
-                  # Reiniciar los servicios
-                  docker-compose up -d
+              # Reiniciar los servicios
+              docker-compose up -d
         
-              EOF
+          EOF
         env:
             DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
             DROPLET_IP: ${{ secrets.DROPLET_IP }}
