@@ -20,8 +20,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build --no-cache -t registry.digitalocean.com/containerhatch/app:hatch-social .
-          docker push registry.digitalocean.com/containerhatch/app:hatch-social
+          docker build --no-cache -t registry.digitalocean.com/containerhatch/app:hatch-social_v2 .
+          docker push registry.digitalocean.com/containerhatch/app:hatch-social_v2
 
       - name: Install sshpass
         run: sudo apt-get install -y sshpass
@@ -37,21 +37,21 @@ jobs:
           sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
             apt-get update
             apt-get install -y docker.io docker-compose
-            mkdir -p /hatch-social
+            mkdir -p /hatch-social_v2
           EOF
         env:
           DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
 
       - name: Copy Docker Compose file to Droplet
         run: |
-            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp docker-compose.yml root@${{ secrets.DROPLET_IP }}:/hatch-social/docker-compose.yml
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp docker-compose.yml root@${{ secrets.DROPLET_IP }}:/hatch-social_v2/docker-compose.yml
         env:
             DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
             DROPLET_IP: ${{ secrets.DROPLET_IP }}
   
       - name: Copy second file to Droplet
         run: |
-            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp default.conf root@${{ secrets.DROPLET_IP }}:/hatch-social/default.conf
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" scp default.conf root@${{ secrets.DROPLET_IP }}:/hatch-social_v2/default.conf
         env:
             DROPLET_PASSWORD: ${{ secrets.DROPLET_PASSWORD }}
             DROPLET_IP: ${{ secrets.DROPLET_IP }}
@@ -60,7 +60,7 @@ jobs:
         run: |
           sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no -o ServerAliveInterval=60 root@${{ secrets.DROPLET_IP }} << 'EOF'
             set -e  
-            cd /hatch-social
+            cd /hatch-social_v2
             
             # Check that docker-compose.yml is present and is not a directory
             if [ -f docker-compose.yml ]; then

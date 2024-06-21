@@ -2,8 +2,8 @@ version: '3'
 
 services:
   app:
-    image: registry.digitalocean.com/containerhatch/app:hatch-social
-    container_name: laravel_app
+    image: registry.digitalocean.com/containerhatch/app:hatch-social_v2
+    container_name: laravel_app_v2
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
