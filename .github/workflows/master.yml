@@ -20,7 +20,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build . -t registry.digitalocean.com/containerhatch/app:hatch-social
+          docker build --no-cache -t registry.digitalocean.com/containerhatch/app:hatch-social .
           docker push registry.digitalocean.com/containerhatch/app:hatch-social
 
       - name: Install sshpass
