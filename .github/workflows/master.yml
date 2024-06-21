@@ -58,7 +58,7 @@ jobs:
     
       - name: SSH into Droplet and manage Docker containers
         run: |
-            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.DROPLET_IP }} << 'EOF'
+            sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 root@${{ secrets.DROPLET_IP }} << 'EOF'
               cd /hatch-social
     
               # Verificar que el archivo docker-compose.yml está presente y no es un directorio
