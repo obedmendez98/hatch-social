@@ -71,7 +71,7 @@ jobs:
             fi
             
             # Detener y eliminar todos los contenedores si existen
-            docker-compose down || true
+            docker-compose down -v || true
             
             # Eliminar todas las imágenes si existen
             docker-compose rm -f || true
