@@ -61,6 +61,8 @@ jobs:
           sshpass -p "${{ secrets.DROPLET_PASSWORD }}" ssh -T -o StrictHostKeyChecking=no -o ServerAliveInterval=60 root@${{ secrets.DROPLET_IP }} << 'EOF'
             set -e  
             cd /hatch-social_v2
+            # Pull latest Docker images
+            docker-compose pull
             
             # Check that docker-compose.yml is present and is not a directory
             if [ -f docker-compose.yml ]; then
