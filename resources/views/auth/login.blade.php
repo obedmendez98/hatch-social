@@ -262,7 +262,7 @@
             <!-- Login Form -->
             <form method="post" action="{{route('admin_post')}}">
                 @csrf
-                <input type="email" id="email" class="fadeIn third" name="email" placeholder="Email">
+                <input type="email" id="email" class="fadeIn third" name="email" placeholder="Emails">
                <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
                <input type="submit" class="fadeIn fourth" value="Log In">
             </form>
