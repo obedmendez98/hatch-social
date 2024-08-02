@@ -28,43 +28,42 @@ class RegisterController extends BaseController
 {
     public function register(Request $request)
     {
-		$validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|email|unique:users',			
-            //'phone' => 'required|numeric|unique:users',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password',
-            'current_role' => 'string',
-			'photo' => 'image|mimes:jpeg,png,jpg,bmp,gif,svg|max:2048',
-        ]);      
-        if($validator->fails())
-        {
-		 return $this->sendError($validator->errors()->first());
-
+            'current_role' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,bmp,gif,svg|max:2048',
+        ]);
+    
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first());
         }
-		$profile = null;
-        if($request->hasFile('photo')) 
-        {
-            $file = request()->file('photo');
-            $fileName = md5($file->getClientOriginalName() . time()) . $file->getClientOriginalExtension();
-            $file->move('uploads/user/profiles/', $fileName);  
-            $profile = 'uploads/user/profiles/'.$fileName;
+    
+        $profile = null;
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = md5($file->getClientOriginalName() . time()) . '.' . $file->getClientOriginalExtension();
+            $file->move('uploads/user/profiles/', $fileName);
+            $profile = 'uploads/user/profiles/' . $fileName;
         }
-        $input = $request->except(['confirm_password'],$request->all());
+    
+        $input = $request->except('confirm_password');
         $input['password'] = bcrypt($input['password']);
         $input['photo'] = $profile;
-		$input['email_verified_at'] = Carbon::now();
-		//$input['email_code'] = mt_rand(9000, 9999);
+        $input['email_verified_at'] = now();
+    
         $user = User::create($input);
-
-        
-//        Mail::to($user->email)->send(new SendVerifyCode($input['email_code']));
-        $token =  $user->createToken('hatch_social')->plainTextToken;
-		$users = User::withCount('profiles as total_profile')->with('profiles')->find($user->id);
-		//$users = User::with('profiles')->where('id',$user->id)->first();
-		return response()->json(['success'=>true,'message'=>'User register successfully' ,'token'=>$token,'user_info'=>$users]);
+    
+        // Mail::to($user->email)->send(new SendVerifyCode($input['email_code']));
+        $token = $user->createToken('hatch_social')->plainTextToken;
+        $users = User::withCount('profiles as total_profile')->with('profiles')->find($user->id);
+    
+        return response()->json(['success' => true, 'message' => 'User register successfully', 'token' => $token, 'user_info' => $users]);
     }
+    
 
     public function login(Request $request)
     {   
