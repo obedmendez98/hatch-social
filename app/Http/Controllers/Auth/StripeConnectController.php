@@ -33,13 +33,15 @@ class StripeConnectController extends Controller
     {
         // Create an instance of the Agent library
         $agent = new Agent();
+        Log::info('Cliente de Stripe creado para el usuario: 1 ');
 
+        Log::info(' '.$request);
         // Check if there is an error in the request
         if ($request->has('error')) {
             // Check if the user is on a mobile device
             if ($agent->isMobile()) {
                 // Redirect to a custom URL scheme for mobile devices
-                $redirectUrl = 'hatchsocial://login';
+                $redirectUrl = 'hatchsocial://login?type=cancel';
             } else {
                 // Redirect to a specific page within your website for computers
                 $redirectUrl = url('/connect/error?error=access_denied');
@@ -72,7 +74,7 @@ class StripeConnectController extends Controller
         // Check if the user is on a mobile device
         if ($agent->isMobile()) {
             // Redirect to a custom URL scheme for mobile devices
-            $redirectUrl = 'hatchsocial://login';
+            $redirectUrl = 'hatchsocial://login?type=accept';
             // Redirect to the appropriate URL based on the device type
             return redirect()->to($redirectUrl);
         } 
