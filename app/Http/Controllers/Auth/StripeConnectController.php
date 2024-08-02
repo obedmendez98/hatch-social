@@ -14,6 +14,7 @@ use Log;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Jenssegers\Agent\Agent;
 
 class StripeConnectController extends Controller
 {
@@ -30,6 +31,23 @@ class StripeConnectController extends Controller
 
     public function handleStripeCallback(Request $request)
     {
+        // Create an instance of the Agent library
+        $agent = new Agent();
+
+        // Check if there is an error in the request
+        if ($request->has('error')) {
+            // Check if the user is on a mobile device
+            if ($agent->isMobile()) {
+                // Redirect to a custom URL scheme for mobile devices
+                $redirectUrl = 'hatchsocial://login';
+            } else {
+                // Redirect to a specific page within your website for computers
+                $redirectUrl = url('/connect/error?error=access_denied');
+            }
+
+            // Redirect to the appropriate URL based on the device type
+            return redirect()->to($redirectUrl);
+        }
 
         $user = User::where('email', "cnavarro0321@gmail.com")->first();
 
@@ -51,6 +69,13 @@ class StripeConnectController extends Controller
         $user->stripe_id = $stripeUserId;
         $user->save();
 
+        // Check if the user is on a mobile device
+        if ($agent->isMobile()) {
+            // Redirect to a custom URL scheme for mobile devices
+            $redirectUrl = 'hatchsocial://login';
+            // Redirect to the appropriate URL based on the device type
+            return redirect()->to($redirectUrl);
+        } 
         return redirect()->route('login')->with('success', 'Cuenta de Stripe conectada exitosamente.');
     }
 
