@@ -259,20 +259,10 @@
             <!-- Tabs Titles -->
             <h2 class="active"> ADMIN Sign In</h2>            <!-- Icon -->
       
-            <!-- Login Form -->
-            <form method="post" action="{{route('admin_post')}}">
-                @csrf
-                <input type="email" id="email" class="fadeIn third" name="email" placeholder="Email">
-               <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
-               <input type="submit" class="fadeIn fourth" value="Log In">
-            </form>
-            <!-- Remind Passowrd -->
-            <div id="formFooter">
-               <a class="underlineHover" href="{{url('password/reset')}}">Forgot Password?</a>
-            </div>
+
 
             <div id="formFooter">
-               <a class="underlineHover" href="{{url('checkout')}}">CHECKOUT</a>
+               <a href="">SUCCESS</a>
             </div>
          </div>
       </div>

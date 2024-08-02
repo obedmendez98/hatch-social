@@ -29,6 +29,20 @@ Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']
 Route::get('/admin', [App\Http\Controllers\Auth\LoginController::class, 'login'])->name('admin');
 Route::post('/adminpost', [App\Http\Controllers\Auth\LoginController::class, 'admin'])->name('admin_post');
 
+Route::get('checkout', [App\Http\Controllers\Auth\StripeConnectController::class, 'createCheckoutSession'])->name('stripe.checkout');
+Route::get('/checkout/success', function () {
+    return view('auth.success');
+})->name('auth.success');
+
+Route::get('/checkout/cancel', function () {
+    return view('auth.cancel');
+})->name('auth.cancel');
+
+Route::get('connect', [App\Http\Controllers\Auth\StripeConnectController::class, 'redirectToStripe'])->name('stripe.connect');
+Route::get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
+
+Route::get('/disconnect', [App\Http\Controllers\Auth\StripeConnectController::class, 'disconnectAccount'])->name('disconnect.account');
+
 // User
 Route::resource('users',UsersController::class);
 

@@ -33,6 +33,11 @@ class User extends Authenticatable
 		'email_code',
     ];
 
+    // Añadir stripe_customer_id a los atributos asignables
+    protected $fillable = [
+        'name', 'email', 'stripe_customer_id',
+    ];
+
     /**
      * The attributes that should be cast.
      *
