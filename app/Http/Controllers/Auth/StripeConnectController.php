@@ -20,6 +20,11 @@ class StripeConnectController extends Controller
 {
     public function redirectToStripe()
     {
+        $user = Auth::user(); // Supongamos que el usuario está autenticado
+
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
         $url = OAuth::authorizeUrl([
             'response_type' => 'code',
             'scope' => 'read_write',

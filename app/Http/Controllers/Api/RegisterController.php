@@ -26,6 +26,7 @@ use Helper;
 
 class RegisterController extends BaseController
 {
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -64,7 +65,6 @@ class RegisterController extends BaseController
         return response()->json(['success' => true, 'message' => 'User register successfully', 'token' => $token, 'user_info' => $users]);
     }
     
-
     public function login(Request $request)
     {   
         if(!empty($request->email) || !empty($request->password))
@@ -108,6 +108,7 @@ class RegisterController extends BaseController
         $user = User::with(['child','goal','temporary_wallet','wallet','payments'])->where('id',Auth::user()->id)->first(); 
         return response()->json(['success'=>true,'message'=>'User Fetch successfully','user_info'=>$user]);
     }
+
     public function logout()
     {
         if(Auth::check())
@@ -120,6 +121,7 @@ class RegisterController extends BaseController
             return $this->sendError('No user in Session .');
         }
     }
+
     public function user(Request $request)
     {
         if(Auth::check())
@@ -131,6 +133,7 @@ class RegisterController extends BaseController
             return $this->sendError('No user in Session .');
         }
     }
+
     public function verify(Request $request)
     {
 		$validator = Validator::make($request->all(),['email_code'=>'required']);
@@ -147,33 +150,35 @@ class RegisterController extends BaseController
             return $this->sendResponse($success, 'Email verified Successfully');
         }
     }
+
     public function change_password(Request $request)
     {
-      try{
-      $validator = Validator::make($request->all(),[
-          'current_password' => 'required',
-          'new_password' => 'required|same:confirm_password|min:8',
-          'confirm_password' => 'required',
-      ]);
-      if($validator->fails()){
-        return $this->sendError($validator->errors()->first());       
-        }
-        $user = Auth::user();
 
-      if (!Hash::check($request->current_password,$user->password)) {
-        return $this->sendError(['error'=>'Current Password Not Matched']);
-      }
-      $user->password = Hash::make($request->new_password);
-      $user->save();
-      return response()->json(['success'=>true,'message'=>'Password Successfully Changed','user_info'=>$user]);
-         }catch(\Eception $e){
+        try{
+            $validator = Validator::make($request->all(),[
+                'current_password' => 'required',
+                'new_password' => 'required|same:confirm_password|min:8',
+                'confirm_password' => 'required',
+            ]);
+      
+            if($validator->fails()){
+                return $this->sendError($validator->errors()->first());       
+            }
+            $user = Auth::user();
+
+            if (!Hash::check($request->current_password,$user->password)) {
+                return $this->sendError(['error'=>'Current Password Not Matched']);
+            }
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return response()->json(['success'=>true,'message'=>'Password Successfully Changed','user_info'=>$user]);
+        }catch(\Eception $e){
            return $this->sendError($e->getMessage());    
         }
     }   
 
     public function noauth(){
 	 return $this->sendError('session destroyed , Login to continue!');
-	
 	}
 	
 	public function cron_plane()
@@ -186,14 +191,13 @@ class RegisterController extends BaseController
             $users = User::with('goal')->get();
             foreach($users as $user)
             {
-                
                 if($user->goal)
                 {
                     $payment = Payment::where('customer_id',$user->stripe_id)->orderBy('id','desc')->first();                
                     // return $payment;
                     // return $payment->created_at;
                     $days = Carbon::parse($payment->created_at)->diffInDays(Carbon::now());
-                     $temporarywallet = TemporaryWallet::where('user_id',$user->id)->first();
+                    $temporarywallet = TemporaryWallet::where('user_id',$user->id)->first();
                     $wallet = Wallet::where('user_id',$user->id)->first();
                     
                     if($user->goal->cnd < $user->goal->number_deduction)
@@ -218,7 +222,7 @@ class RegisterController extends BaseController
                                     'customer' => $user->stripe_id,
                                 ]);
 								
-                               // return $chargp;
+                                //return $chargp;
 								Payment::create([
                                     'amount' => round(($payment) ? $perdeduction + $payment->amount : 0) ,
                                     'customer_id' => $user->stripe_id,
@@ -260,11 +264,7 @@ class RegisterController extends BaseController
                                         'type' => 'Credit',
                                         'status' => 'Credit',
                                     ]);
-									
-                                    
-                                    
-									
-									
+								
                                     $wallet->update([
                                         'amount' => $wallet->amout + $temporarywallet->amount,
                                     ]);
@@ -290,7 +290,6 @@ class RegisterController extends BaseController
                             }
                             if($days == '15')
                             {
-
                                 // $penalty =  $user->goal->amount_save ;
                                 // $chargeamount = $user->goal->amount_per_deduction + $penalty;
                                 $chargeamount = $user->goal->amount_per_deduction * 2;
@@ -325,10 +324,8 @@ class RegisterController extends BaseController
                                     'amount' => $temporarywallet->amount + $chargeamount,
                                 ]);
 
-                                
                                 Helper::payment_charge($user->id);
                                 
-
                                 if($user->goal->cnd == $user->goal->number_deduction)
                                 {
                                     Helper::goal_complete($user->id);
@@ -344,8 +341,6 @@ class RegisterController extends BaseController
                                         'status' => 'Credit',
                                     ]);
 
-                                    
-									
 									$user->goal->delete();
                                     $wallet->update([
                                         'amount' => $wallet->amout + $temporarywallet->amount,
@@ -406,7 +401,6 @@ class RegisterController extends BaseController
                                 $user->goal->update([
                                     'cnd' => $user->goal->cnd + 3
                                 ]);
-
 
                                 $temporarywallet->update([
                                     'amount' => $temporarywallet->amount + $chargeamount,
