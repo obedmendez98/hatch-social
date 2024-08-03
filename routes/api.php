@@ -53,6 +53,11 @@ Route::group(['middleware' => ['auth:sanctum'], 'prefix' => 'auth'], function ()
 	Route::post('hashtags_list', [\App\Http\Controllers\Api\FeedController::class,'hashtags_list']);
 	Route::post('feed', [\App\Http\Controllers\Api\FeedController::class,'store']);
 	Route::get('post-by-profile/{id}', [\App\Http\Controllers\Api\FeedController::class,'post_by_profile']);
+    Route::get('post-by-profile/{id}', [\App\Http\Controllers\Api\FeedController::class,'post_by_profile']);
+    
+    Route::get('connect', [App\Http\Controllers\Auth\StripeConnectController::class, 'redirectToStripe'])->name('stripe.connect');
+    Route::get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
+    
 	Route::post('post_like', [\App\Http\Controllers\Api\PostController::class,'like']);
 	Route::get('post_video_detail/{id}', [\App\Http\Controllers\Api\PostController::class,'video_play']);
 	Route::resource('event', \App\Http\Controllers\Api\EventController::class);
