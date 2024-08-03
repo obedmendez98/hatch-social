@@ -39,8 +39,8 @@ Route::get('/checkout/cancel', function () {
 })->name('auth.cancel');
 
 Route::get('connect', [App\Http\Controllers\Auth\StripeConnectController::class, 'redirectToStripe'])->name('stripe.connect');
-//Route::get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
-Route::middleware('auth')->get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
+Route::get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
+//Route::middleware('auth')->get('connect/callback', [App\Http\Controllers\Auth\StripeConnectController::class, 'handleStripeCallback'])->name('stripe.callback');
 
 Route::get('/disconnect', [App\Http\Controllers\Auth\StripeConnectController::class, 'disconnectAccount'])->name('disconnect.account');
 

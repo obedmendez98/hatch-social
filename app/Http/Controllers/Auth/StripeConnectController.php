@@ -21,6 +21,7 @@ class StripeConnectController extends Controller
     public function redirectToStripe()
     {
         $user = Auth::user(); // Supongamos que el usuario está autenticado
+        $state = encrypt($user->id); // Cifra el ID del usuario para usarlo en la URL de redirección
 
         if (!$user) {
             return response()->json(['error' => 'User not authenticated'], 401);
@@ -29,6 +30,7 @@ class StripeConnectController extends Controller
             'response_type' => 'code',
             'scope' => 'read_write',
             'client_id' => env('STRIPE_CLIENT_ID'),
+            'state' => $state,
         ]);
 
        // return redirect($url);
@@ -59,10 +61,13 @@ class StripeConnectController extends Controller
             return redirect()->to($redirectUrl);
         }
 
-        $user = Auth::user();
+        $state = $request->input('state');
+        $userId = decrypt($state); // Descifra el ID del usuario
+
+        $user = User::find($userId); // Obtén el usuario por ID
 
         if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         //$user = User::where('email', "cnavarro0321@gmail.com")->first();
