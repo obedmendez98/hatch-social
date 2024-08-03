@@ -20,11 +20,11 @@ class StripeConnectController extends Controller
 {
     public function redirectToStripe()
     {
-        $user = Auth::user(); // Supongamos que el usuario está autenticado
+        //$user = Auth::user(); // Supongamos que el usuario está autenticado
 
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
+        //if (!$user) {
+            //return response()->json(['error' => 'User not authenticated'], 401);
+        //}
         $url = OAuth::authorizeUrl([
             'response_type' => 'code',
             'scope' => 'read_write',
@@ -36,6 +36,7 @@ class StripeConnectController extends Controller
 
     public function handleStripeCallback(Request $request)
     {
+
         // Create an instance of the Agent library
         $agent = new Agent();
         Log::info('Cliente de Stripe creado para el usuario: 1 ');
@@ -56,7 +57,13 @@ class StripeConnectController extends Controller
             return redirect()->to($redirectUrl);
         }
 
-        $user = User::where('email', "cnavarro0321@gmail.com")->first();
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        //$user = User::where('email', "cnavarro0321@gmail.com")->first();
 
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
